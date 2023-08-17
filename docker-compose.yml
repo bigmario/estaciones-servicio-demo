@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: estaciones-servicio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - main-network
+    restart: always
+  
+volumes:
+  db:
+    driver: local
+    
+networks:
+  main-network:
