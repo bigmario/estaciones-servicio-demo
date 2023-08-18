@@ -19,12 +19,22 @@ public class UserController {
 
     @GetMapping("/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(userService.findUserByUsername(username));
+        User user = userService.findUserByUsername(username);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(user);
+        }
     }
 
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers(){
-        return ResponseEntity.ok(userService.findAllUsers());
+        List<User> users = userService.findAllUsers();
+        if (users.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(users);
+        }
     }
 
     // Otros métodos de gestión de usuarios

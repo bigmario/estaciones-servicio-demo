@@ -1,5 +1,6 @@
 package com.estaciones.demo.modules.admin.entity;
 
+import com.estaciones.demo.core.audit.AuditableEntity;
 import com.estaciones.demo.modules.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Tenant {
+public class Tenant extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,9 +26,9 @@ public class Tenant {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 
     // Getters y setters
 }
