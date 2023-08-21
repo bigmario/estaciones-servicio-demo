@@ -29,10 +29,11 @@ public class AuthService {
         String token=jwtService.getToken(user);
         return AuthResponse.builder()
             .token(token)
-                .username(request.getUsername())
                     .build();
     }
-    public AuthResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
+
+
         User user = User.builder()
             .username(request.getUsername())
             .password(passwordEncoder.encode(request.getPassword()))
@@ -40,12 +41,10 @@ public class AuthService {
                 .email(request.getEmail())
             .role(Role.USER)
             .build();
-
         userRepository.save(user);
-
-        return AuthResponse.builder()
-            .token(jwtService.getToken(user))
-            .build();
+//        return AuthResponse.builder()
+//            .token(jwtService.getToken(user))
+//            .build();
     }
 
 }

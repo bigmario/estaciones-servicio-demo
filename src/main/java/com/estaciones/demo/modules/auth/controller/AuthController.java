@@ -5,7 +5,9 @@ import com.estaciones.demo.modules.auth.service.AuthService;
 import com.estaciones.demo.modules.auth.request.LoginRequest;
 import com.estaciones.demo.modules.auth.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,14 +18,24 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = "login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request)
-    {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            AuthResponse response = authService.login(request);
+            if (!response.getToken().isBlank()) {
+                return ResponseEntity.ok(response);
+            }
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return null;
     }
 
+
     @PostMapping(value = "register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request)
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request)
     {
-        return ResponseEntity.ok(authService.register(request));
+        authService.register(request);
+        return ResponseEntity.ok("Register Success");
     }
 }
