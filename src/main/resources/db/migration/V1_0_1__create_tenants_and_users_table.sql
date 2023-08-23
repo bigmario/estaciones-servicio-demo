@@ -37,6 +37,7 @@ CREATE TABLE public.users (
     username character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
+    role character varying(10) NOT NULL CHECK (role IN ('ADMIN', 'USER')),
     email character varying(255) NOT NULL
 );
 
