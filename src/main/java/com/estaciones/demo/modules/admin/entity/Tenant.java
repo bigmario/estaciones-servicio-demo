@@ -1,6 +1,5 @@
 package com.estaciones.demo.modules.admin.entity;
 
-import com.estaciones.demo.core.audit.AuditableEntity;
 import com.estaciones.demo.modules.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -19,7 +18,7 @@ import java.util.List;
 public class Tenant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column
     private String name;

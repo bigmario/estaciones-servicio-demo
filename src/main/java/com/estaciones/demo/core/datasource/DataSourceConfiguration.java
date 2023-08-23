@@ -4,11 +4,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class DataSourceConfiguration {
@@ -52,4 +55,21 @@ public class DataSourceConfiguration {
     return new TenantAwareDataSource(dataSource);
   }
 
+  ///////////////////////////////////TENANT ADMIN///////////////////////////////////////////
+  @Bean
+  @ConfigurationProperties(prefix = "tenant.admin.datasource")
+  public DataSource tenantAdminDatasource() {
+    return DataSourceBuilder.create().build();
+  }
+
+  @Bean
+  public DynamicDataSourceRouter dynamicDataSourceRouter() {
+    DynamicDataSourceRouter dataSourceRouter = new DynamicDataSourceRouter();
+    Map<Object, Object> targetDataSources = new HashMap<>();
+    targetDataSources.put("applicationDataSource", applicationDataSource());
+    targetDataSources.put("tenantAdminDatasource", tenantAdminDatasource());
+    dataSourceRouter.setTargetDataSources(targetDataSources);
+    dataSourceRouter.setDefaultTargetDataSource(applicationDataSource());
+    return dataSourceRouter;
+  }
 }

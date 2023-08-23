@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TenantRepository extends JpaRepository<Tenant, Long> {}
+public interface TenantRepository extends JpaRepository<Tenant, Integer> {}
 

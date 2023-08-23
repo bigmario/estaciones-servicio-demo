@@ -8,23 +8,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/tenants")
 public class TenantAdminController {
+    private final TenantService tenantService;
+
     @Autowired
-    private TenantService tenantService;
-
-    @GetMapping()
-    public ResponseEntity<List<Tenant>> getAllTenants() {
-        return ResponseEntity.ok(tenantService.getAllTenants());
+    public TenantAdminController(TenantService tenantService) {
+        this.tenantService = tenantService;
     }
 
-    @PostMapping()
-    public ResponseEntity<Tenant> registerTenant(@RequestBody Tenant newTenant){
-        return ResponseEntity.ok(tenantService.registerTenant(newTenant));
+    @GetMapping
+    public List<Tenant> getAllTenants() {
+        return tenantService.getAllTenants();
     }
 
-    // Otros métodos de administración de tenants
+    @GetMapping("/{id}")
+    public Optional<Tenant> getTenantById(@PathVariable Integer id) {
+        return tenantService.getTenantById(id);
+    }
+
+    @PostMapping
+    public Tenant createTenant(@RequestBody Tenant tenant) {
+        return tenantService.createTenant(tenant);
+    }
+
+    @PutMapping("/{id}")
+    public Tenant updateTenant(@PathVariable Integer id, @RequestBody Tenant tenant) {
+        tenant.setId(id);
+        return tenantService.updateTenant(tenant);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTenant(@PathVariable Integer id) {
+        tenantService.deleteTenant(id);
+    }
 }
 

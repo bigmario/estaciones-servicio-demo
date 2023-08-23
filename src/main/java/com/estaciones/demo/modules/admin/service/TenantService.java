@@ -1,30 +1,40 @@
 package com.estaciones.demo.modules.admin.service;
 
-import com.estaciones.demo.modules.admin.dto.RegisterTenantDto;
 import com.estaciones.demo.modules.admin.entity.Tenant;
 import com.estaciones.demo.modules.admin.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TenantService {
     @Autowired
-    private TenantRepository tenantRepository;
+    private final TenantRepository tenantRepository;
+
+    public TenantService(TenantRepository tenantRepository) {
+        this.tenantRepository = tenantRepository;
+    }
 
     public List<Tenant> getAllTenants() {
-        List<Tenant> tenantsWithUsers = tenantRepository.findAll();
-
-        return tenantsWithUsers;
+        return tenantRepository.findAll();
     }
 
-    public Tenant registerTenant(Tenant newTenant){
-        return tenantRepository.save(newTenant);
+    public Optional<Tenant> getTenantById(Integer id) {
+        return tenantRepository.findById(id);
     }
 
+    public Tenant createTenant(Tenant tenant) {
+        return tenantRepository.save(tenant);
+    }
 
+    public Tenant updateTenant(Tenant tenant) {
+        return tenantRepository.save(tenant);
+    }
 
-    // Otros métodos de administración de tenants
+    public void deleteTenant(Integer id) {
+        tenantRepository.deleteById(id);
+    }
 }
 
