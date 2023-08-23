@@ -4,6 +4,7 @@ import com.estaciones.demo.modules.admin.entity.Tenant;
 import com.estaciones.demo.modules.admin.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,12 @@ public class TenantService {
 
     public void deleteTenant(Integer id) {
         tenantRepository.deleteById(id);
+    }
+
+    public List<String> getAllTenantOrders() {
+        List<String> orders = tenantRepository.getAllTenantOrders();
+        System.out.println(orders);
+        return tenantRepository.getAllTenantOrders();
     }
 }
 

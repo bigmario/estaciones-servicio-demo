@@ -45,5 +45,10 @@ public class TenantAdminController {
     public void deleteTenant(@PathVariable Integer id) {
         tenantService.deleteTenant(id);
     }
+
+    @GetMapping("/orders")
+    public List<String> getAllTenantOrders() {
+        return tenantService.getAllTenantOrders();
+    }
 }
 

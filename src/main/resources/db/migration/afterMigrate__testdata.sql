@@ -40,21 +40,4 @@ INSERT INTO public.supply_order (tenant_id, status)
   VALUES
 ((SELECT id FROM public.tenants WHERE name = 'tenant_2'), 'pendiente') ON CONFLICT DO NOTHING;
 
-------------------------------------------------------------------------------------------
-INSERT INTO public.supply_order (tenant_id, status)
-  VALUES
-((SELECT id FROM public.tenants WHERE name = 'tenant_1'), 'aprobada') ON CONFLICT DO NOTHING;
-
-INSERT INTO public.supply_order (tenant_id, status)
-  VALUES
-((SELECT id FROM public.tenants WHERE name = 'tenant_2'), 'rechazada') ON CONFLICT DO NOTHING;
-
-INSERT INTO public.supply_order (tenant_id, status)
-  VALUES
-((SELECT id FROM public.tenants WHERE name = 'tenant_1'), 'pendiente') ON CONFLICT DO NOTHING;
-
-INSERT INTO public.supply_order (tenant_id, status)
-  VALUES
-((SELECT id FROM public.tenants WHERE name = 'tenant_2'), 'pendiente') ON CONFLICT DO NOTHING;
-
 
