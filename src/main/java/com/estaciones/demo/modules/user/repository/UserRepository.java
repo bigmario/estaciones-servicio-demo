@@ -15,13 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     List<User> findAll();
     boolean existsByEmail(String email);
-    @Modifying
-    @Transactional
-    @Query(value="ALTER TABLE public.users DISABLE ROW LEVEL SECURITY", nativeQuery = true)
-    void disableRls();
-    @Modifying
-    @Transactional
-    @Query( value = "ALTER TABLE public.users ENABLE ROW LEVEL SECURITY",nativeQuery = true)
-    void activateRls();
+
 }
 

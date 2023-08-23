@@ -54,12 +54,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
               try {
                 sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                        .exceptionHandling().authenticationEntryPoint((request, response, ex) -> {
-                          response.sendError(
-                                  HttpServletResponse.SC_UNAUTHORIZED,
-                                  ex.getMessage()
-                          );
-                        });
+                        .exceptionHandling().authenticationEntryPoint((request, response, ex)
+                                -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage() ));
               } catch (Exception e) {
                 throw new RuntimeException(e);
               }
