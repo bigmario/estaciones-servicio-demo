@@ -1,14 +1,12 @@
 package com.estaciones.demo.core.config;
 
-import com.estaciones.demo.core.datasource.DynamicDataSourceRouter;
+import com.estaciones.demo.core.Jwt.JwtAuthenticationFilter;
 import com.estaciones.demo.core.interceptor.TenantInterceptor;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,43 +15,57 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import com.estaciones.demo.core.datasource.DataSourceConfiguration.*;
-
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
+@EnableWebSecurity()
 @RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
   private final TenantInterceptor tenantInterceptor;
-
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-            .csrf().disable()
-            .authorizeHttpRequests()
-            .anyRequest()
-            .permitAll()
-            .and()
-            .httpBasic();
-
-    return http.build();
-  }
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final AuthenticationProvider authProvider;
 
   @Override
   public void addInterceptors(final InterceptorRegistry registry) {
-    registry.addInterceptor(tenantInterceptor).excludePathPatterns("/admin/tenants/**", "/auth/login");
+    registry.addInterceptor(tenantInterceptor).excludePathPatterns("/auth/login");
   }
 
   @Override
   public void addCorsMappings(final CorsRegistry registry) {
     registry.addMapping("/**")
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-        .allowedOrigins("*")
-        .allowedHeaders("*");
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+            .allowedOrigins("*")
+            .allowedHeaders("*");
+  }
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
+  {
+    return http.cors().and().csrf().disable()
+            .authorizeHttpRequests(authRequest -> {
+                      authRequest
+                              .requestMatchers("/auth/login").permitAll()
+                              .requestMatchers("/auth/register").hasAuthority("ADMIN")
+                              .anyRequest().authenticated();
+                    }
+            )
+            .sessionManagement(sessionManager->
+            {
+              try {
+                sessionManager
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                        .exceptionHandling().authenticationEntryPoint((request, response, ex) -> {
+                          response.sendError(
+                                  HttpServletResponse.SC_UNAUTHORIZED,
+                                  ex.getMessage()
+                          );
+                        });
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            })
+            .authenticationProvider(authProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
   }
 }
-
