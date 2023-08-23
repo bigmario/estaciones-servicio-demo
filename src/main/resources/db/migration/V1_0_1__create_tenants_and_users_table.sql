@@ -69,5 +69,36 @@ ALTER TABLE ONLY public.users
     DROP CONSTRAINT IF EXISTS fk_tenant_id;
 
 ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_tenant_id FOREIGN KEY (tenant_id) REFERENCES public.tenants(id);
+
+----------------------------------------------------------------------------------------------
+CREATE TABLE public.supply_order (
+    id integer NOT NULL,
+    tenant_id integer NOT NULL,
+    status character varying(255) NOT NULL
+);
+
+CREATE SEQUENCE public.supply_order_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE public.supply_order_id_seq OWNED BY public.supply_order.id;
+
+ALTER TABLE ONLY public.supply_order ALTER COLUMN id SET DEFAULT nextval('public.supply_order_id_seq'::regclass);
+
+ALTER TABLE ONLY public.supply_order
+    DROP CONSTRAINT IF EXISTS supply_order_pkey;
+
+ALTER TABLE ONLY public.supply_order
+    ADD CONSTRAINT supply_order_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.supply_order
+    DROP CONSTRAINT IF EXISTS fk_tenant_id;
+
+ALTER TABLE ONLY public.supply_order
     ADD CONSTRAINT fk_tenant_id FOREIGN KEY (tenant_id) REFERENCES public.tenants(id)
 

@@ -1,10 +1,13 @@
 package com.estaciones.demo.core.interceptor;
 
+import com.estaciones.demo.core.Jwt.JwtAuthenticationFilter;
+import com.estaciones.demo.core.Jwt.JwtService;
 import com.estaciones.demo.core.datasource.TenantContext;
 import com.estaciones.demo.core.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -14,20 +17,27 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class TenantInterceptor implements HandlerInterceptor {
 
+  @Autowired
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @Autowired
+  private JwtService jwtService;
+
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    if (request.getHeader("x-tenant-id") == null) {
-      response.getWriter().write(new ErrorResponse("Header x-tenant-id is missing").toString());
+    String token = jwtAuthenticationFilter.getTokenRequestPublic(request);
+    Integer tenantId = jwtService.getTenantIdFromToken(token);
+    //System.out.println(tenatID);
+    if (token.isEmpty()) {
+      response.getWriter().write(new ErrorResponse("token invalid").toString());
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.setContentType("application/json");
       return false;
     }
     try {
-      Integer tenantId = Integer.valueOf(request.getHeader("x-tenant-id"));
       TenantContext.setTenantId(tenantId);
       return true;
     } catch (NumberFormatException e) {
-      response.getWriter().write(new ErrorResponse("Header x-tenant-id value is incorrect").toString());
+      response.getWriter().write(new ErrorResponse("token value is incorrect").toString());
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       response.setContentType("application/json");
       return false;

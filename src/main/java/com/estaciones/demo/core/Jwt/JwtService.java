@@ -1,10 +1,13 @@
 package com.estaciones.demo.core.Jwt;
 
+import com.estaciones.demo.core.utils.ServiceConstant;
+import com.estaciones.demo.modules.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +20,16 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY="586E3272357538782F413F4428472B4B6250655368566B597033733676397924";
+    @Value("${"+ ServiceConstant.SECRET_KEY_JWT +"}")
+    private String SECRET_KEY ;
 
-    public String getToken(UserDetails user) {
+    public String getToken(User user) {
         return getToken(new HashMap<>(), user);
     }
 
-    private String getToken(Map<String,Object> extraClaims, UserDetails user) {
+    private String getToken(Map<String,Object> extraClaims, User user) {
         extraClaims.put("rol",user.getAuthorities());
+        extraClaims.put("tenant-id", user.getTenantId());
         return Jwts
             .builder()
                 .setClaims(extraClaims)
@@ -58,7 +63,14 @@ public class JwtService {
             .parseClaimsJws(token)
             .getBody();
     }
-
+    public Integer getTenantIdFromToken(String token) {
+        Claims claims = getAllClaims(token); // Llamar al método adecuado
+        if (claims != null) {
+            return (Integer) claims.get("tenant-id");
+        } else {
+            return null;
+        }
+    }
     public <T> T getClaim(String token, Function<Claims,T> claimsResolver)
     {
         final Claims claims=getAllClaims(token);

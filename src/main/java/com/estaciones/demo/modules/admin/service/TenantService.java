@@ -16,6 +16,9 @@ public class TenantService {
         return tenantRepository.findAll();
     }
 
+    public List<String> getAllTenatsOrder(){
+        return  tenantRepository.getTenant();
+    }
     // Otros métodos de administración de tenants
 }
 

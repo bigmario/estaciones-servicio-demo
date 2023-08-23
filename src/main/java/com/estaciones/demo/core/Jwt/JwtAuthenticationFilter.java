@@ -67,6 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
+    public String getTokenRequestPublic(HttpServletRequest request){
+        return getTokenFromRequest(request);
+    }
 
 
     

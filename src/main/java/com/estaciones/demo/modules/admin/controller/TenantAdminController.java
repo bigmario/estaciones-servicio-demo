@@ -1,6 +1,4 @@
 package com.estaciones.demo.modules.admin.controller;
-
-import com.estaciones.demo.modules.admin.entity.Tenant;
 import com.estaciones.demo.modules.admin.service.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +15,8 @@ public class TenantAdminController {
     private TenantService tenantService;
 
     @GetMapping
-    public ResponseEntity<List<Tenant>> getAllTenants() {
-        return ResponseEntity.ok(tenantService.getAllTenants());
+    public ResponseEntity<List<String>> getAllTenants() {
+        return ResponseEntity.ok(tenantService.getAllTenatsOrder());
     }
 
     // Otros métodos de administración de tenants
