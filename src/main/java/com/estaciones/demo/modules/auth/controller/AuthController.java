@@ -1,5 +1,6 @@
 package com.estaciones.demo.modules.auth.controller;
 
+import com.estaciones.demo.core.handler.CustomExceptionHandler;
 import com.estaciones.demo.modules.auth.response.AuthResponse;
 import com.estaciones.demo.modules.auth.service.AuthService;
 import com.estaciones.demo.modules.auth.request.LoginRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,12 +27,13 @@ public class AuthController {
     
     private final AuthService authService;
     @Autowired
+    private CustomExceptionHandler customExceptionHandler;
+    @Autowired
     private UserService userService;
     @PostMapping(value = "login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-            AuthResponse response = authService.login(request);
+        AuthResponse response = authService.login(request);
                 return ResponseEntity.ok(response);
-
     }
 
     @PostMapping(value = "register")
